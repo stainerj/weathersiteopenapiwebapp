@@ -1,0 +1,14 @@
+clear sky
+few clouds
+scattered clouds
+broken clouds
+overcast clouds
+shower rain
+rain
+thunderstorm
+snow
+mist
+
+
+https://openweathermap.org/weather-conditions
+http://openweathermap.org/img/wn/10d@2x.png

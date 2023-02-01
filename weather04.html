@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Current Weather</title>
+  
+  <!-- google font    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,900" rel="stylesheet">   -->
+
+  <style>
+	body {
+		font-family: 'Helvetica', sans-serif;
+		font-weight: 400;
+		font-size: 1.3em;
+		color: #fff;
+		text-shadow: .1em .1em 0 rgba(0,0,0,0.3);
+		height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-image: linear-gradient(to right bottom, #7abfff, #9cc7f0, #9ab6d1, #99a2aa);
+	}
+	h1 {
+		margin: 0 auto;
+		font-weight: 100;
+		font-size: 2.2em;
+		text-align: center;
+		color: #fff;
+		font-size: 5em;
+	}
+    .latitudelongitude {
+        font-size: 0.7em;
+        text-shadow: none;
+        color: #000;
+    }
+	body.clearsky {
+		background-image: linear-gradient(to right bottom, #0084ff, #379eff, #7bbfff, #add7ff);
+	}
+	body.clouds {
+		background-image: linear-gradient(to right bottom, #7abfff, #9cc7f0, #9ab6d1, #99a2aa);
+	}
+	body.overcast {
+		background-image: linear-gradient(to left top, #97c5f0, #a5bdd3, #7f8d99, #8c8f92);
+	}
+	
+  </style>
+  
+</head>
+<body>
+  <div id="weather">
+    <div id="description"></div>
+	<div id="symbol"><img src="" id="icon"></div>
+    <div id="pressure"></div>
+    <div id="wind"></div>
+    <h1 id="temp"></h1>
+    <div id="location"></div>
+    <div id="latlong" class="latitudelongitude"></div>
+	<input name="textbox1" type="text" id="txt1" onkeypress="enterKeyPressed()"/>
+	<input name="btnSubmit" onclick="getInput()" type="button" value="Submit"/>
+  </div>
+  
+  <script lang="text/javascript">
+    // javascript
+	
+	function fetchWeather(cityName) {
+		var key = 'API-KEY';
+		fetch('https://api.openweathermap.org/data/2.5/weather?q=' + cityName+ '&units=metric&appid=' + key)
+		.then(function(resp) { return resp.json() }) // Convert data to json
+		.then(function(data) {
+		drawWeather(data); // Call drawWeather
+		})
+		.catch(function() {
+		// catch any errors
+		});
+	}
+	
+	function drawWeather(d) {
+		var celsius = Math.round(parseFloat(d.main.temp));
+		var fahrenheit = celsiusToFahrenheit(celsius);
+		
+		document.getElementById('description').innerHTML = d.weather[0].description;
+		document.getElementById('icon').src = "http://openweathermap.org/img/wn/" + d.weather[0].icon + ".png";
+        document.getElementById('pressure').innerHTML = d.main.pressure + 'hPa' + ', ' + d.main.humidity + '%';
+        document.getElementById('wind').innerHTML = 'wind ' + d.wind.deg + '&deg;, ' + d.wind.speed + 'm/s';
+		document.getElementById('temp').innerHTML = celsius + '&deg;';
+		document.getElementById('location').innerHTML = d.name;
+        document.getElementById('latlong').innerHTML = d.coord.lat.toFixed(2) + ', ' + d.coord.lon.toFixed(2);
+		
+		if (document.getElementById('description').innerHTML.includes("clear sky")) {
+			document.body.className = 'clearsky';
+		}
+		else if (document.getElementById('description').innerHTML.includes("few clouds")) {
+			document.body.className = 'clearsky';
+		}
+		else if (document.getElementById('description').innerHTML.includes("scattered clouds")) {
+			document.body.className = 'clouds';
+		}
+		else if (document.getElementById('description').innerHTML.includes("broken clouds")) {
+			document.body.className = 'clouds';
+		}
+		else if (document.getElementById('description').innerHTML.includes("overcast clouds")) {
+			document.body.className = 'overcast';
+		}
+		else if (document.getElementById('description').innerHTML.includes("rain")) {
+			document.body.className = 'overcast';
+		}
+		else if (document.getElementById('description').innerHTML.includes("thunderstorm")) {
+			document.body.className = 'overcast';
+		}
+		else if (document.getElementById('description').innerHTML.includes("snow")) {
+			document.body.className = 'overcast';
+		}
+		else if (document.getElementById('description').innerHTML.includes("mist")) {
+			document.body.className = 'overcast';
+		}
+		else document.body.className = 'clouds';
+	
+    }
+
+	function celsiusToFahrenheit(degC) {
+		var degF = (degC*1.8)+32;
+		return degF;
+	}
+
+	function enterKeyPressed() {
+        var input = document.getElementById("txt1");
+    	input.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				inputLocation = input.value;
+				fetchWeather(inputLocation);
+				input.click();
+				console.log("enter key pressed function");
+			}
+    	});
+	}
+
+	function getInput() {
+		var inputLocation = document.getElementById("txt1").value;
+		fetchWeather(inputLocation);
+    }
+
+
+  </script>
+</body>
+</html>
